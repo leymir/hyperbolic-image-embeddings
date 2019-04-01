@@ -1,8 +1,11 @@
-import torch
-import hyptorch.pmath as pmath
 import math
+
+import torch
 import torch.nn as nn
 import torch.nn.init as init
+
+import hyptorch.pmath as pmath
+
 
 class HyperbolicMLR(nn.Module):
     r"""
@@ -18,8 +21,9 @@ class HyperbolicMLR(nn.Module):
         self.ball_dim = ball_dim
         self.reset_parameters()
 
-    def forward(self, x):
-        c = torch.as_tensor(self.c).type_as(x)
+    def forward(self, x, c=None):
+        if c is None:
+            c = torch.as_tensor(self.c).type_as(x)
         p_vals_poincare = pmath.expmap0(self.p_vals, c=self.c)
         conformal_factor = (1 - c * p_vals_poincare.pow(2).sum(dim=1, keepdim=True))
         a_vals_poincare = self.a_vals * conformal_factor
@@ -59,13 +63,15 @@ class HypLinear(nn.Module):
             bound = 1 / math.sqrt(fan_in)
             init.uniform_(self.bias, -bound, bound)
 
-    def forward(self, x):
-        mv = pmath.mobius_matvec(self.weight, x, c=self.c)
+    def forward(self, x, c=None):
+        if c is None:
+            c = self.c
+        mv = pmath.mobius_matvec(self.weight, x, c=c)
         if self.bias is None:
-            return pmath.project(mv, c=self.c)
+            return pmath.project(mv, c=c)
         else:
-            bias = pmath.expmap0(self.bias, c=self.c)
-            return pmath.project(pmath.mobius_add(mv, bias), c=self.c)
+            bias = pmath.expmap0(self.bias, c=c)
+            return pmath.project(pmath.mobius_add(mv, bias), c=c)
 
 
     def extra_repr(self):
@@ -85,8 +91,10 @@ class ConcatPoincareLayer(nn.Module):
         self.l2 = HypLinear(d2, d_out, bias=False, c=c)
         self.c = c
 
-    def forward(self, x1, x2):
-        return pmath.mobius_add(self.l1(x1), self.l2(x2), c=self.c)
+    def forward(self, x1, x2, c=None):
+        if c is None:
+            c = self.c
+        return pmath.mobius_add(self.l1(x1), self.l2(x2), c=c)
 
 
     def extra_repr(self):
@@ -100,8 +108,10 @@ class HyperbolicDistanceLayer(nn.Module):
         super(HyperbolicDistanceLayer, self).__init__()
         self.c = c
 
-    def forward(self, x1, x2):
-        return pmath.dist(x1, x2, c=self.c, keepdim=True)
+    def forward(self, x1, x2, c=None):
+        if c is None:
+            c = self.c
+        return pmath.dist(x1, x2, c=c, keepdim=True)
 
     def extra_repr(self):
         return 'c={}'.format(self.c)
@@ -112,7 +122,7 @@ class ToPoincare(nn.Module):
     Module which maps points in n-dim Euclidean space
     to n-dim Poincare ball
     """
-    def __init__(self, c, train_x=False, ball_dim=None):
+    def __init__(self, c, train_c=False, train_x=False, ball_dim=None):
         super(ToPoincare, self).__init__()
         if train_x:
             if ball_dim is None:
@@ -121,8 +131,12 @@ class ToPoincare(nn.Module):
         else:
             self.register_parameter('xp', None)
 
+        if train_c:
+            self.c = nn.Parameter(torch.Tensor([c,]))
+        else:
+            self.c = c
+
         self.train_x = train_x
-        self.c = c
 
     def forward(self, x):
         if self.train_x:
@@ -139,7 +153,7 @@ class FromPoincare(nn.Module):
     Module which maps points in n-dim Poincare ball
     to n-dim Euclidean space
     """
-    def __init__(self, c, train_x=False, ball_dim=None):
+    def __init__(self, c, train_c=False, train_x=False, ball_dim=None):
 
         super(FromPoincare, self).__init__()
 
@@ -149,7 +163,13 @@ class FromPoincare(nn.Module):
             self.xp = nn.Parameter(torch.zeros((ball_dim,)))
         else:
             self.register_parameter('xp', None)
-        self.c = c
+
+        if train_c:
+            self.c = nn.Parameter(torch.Tensor([c,]))
+        else:
+            self.c = c
+
+        self.train_c = train_c
         self.train_x = train_x
 
     def forward(self, x):
@@ -159,6 +179,6 @@ class FromPoincare(nn.Module):
         return pmath.logmap0(x, c=self.c)
 
     def extra_repr(self):
-        return 'c={}, train_x={}'.format(self.c, self.train_x)
+        return 'train_c={}, train_x={}'.format(self.train_c, self.train_x)
 
 

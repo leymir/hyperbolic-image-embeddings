@@ -1,10 +1,13 @@
 from __future__ import print_function
+
 import argparse
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torchvision import datasets, transforms
+
 import hyptorch.nn as hypnn
 
 
@@ -15,7 +18,10 @@ class Net(nn.Module):
         self.conv2 = nn.Conv2d(20, 50, 5, 1)
         self.fc1 = nn.Linear(4 * 4 * 50, 500)
         self.fc2 = nn.Linear(500, args.dim)
-        self.tp = hypnn.ToPoincare(c=args.c, train_x=args.train_x, ball_dim=args.dim)
+        self.tp = hypnn.ToPoincare(c=args.c,
+                                   train_x=args.train_x,
+                                   train_c=args.train_c,
+                                   ball_dim=args.dim)
         self.mlr = hypnn.HyperbolicMLR(ball_dim=args.dim, n_classes=10, c=args.c)
 
     def forward(self, x):
@@ -27,7 +33,7 @@ class Net(nn.Module):
         x = F.relu(self.fc1(x))
         x = self.fc2(x)
         x = self.tp(x)
-        return F.log_softmax(self.mlr(x), dim=-1)
+        return F.log_softmax(self.mlr(x, c=self.tp.c), dim=-1)
 
 
 def train(args, model, device, train_loader, optimizer, epoch):
@@ -88,6 +94,8 @@ def main():
     parser.add_argument('--c', type=float, default=1.0, help='Curvature of the Poincare ball')
     parser.add_argument('--dim', type=int, default=2, help='Dimension of the Poincare ball')
     parser.add_argument('--train_x', action='store_true', default=False, help='train the exponential map origin')
+    parser.add_argument('--train_c', action='store_true', default=False, help='train the Poincare ball curvature')
+
 
 
 
