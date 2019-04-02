@@ -3,8 +3,8 @@ Implementation of various mathematical operations in the Poincare ball model of 
 functions are based on the implementation in https://github.com/geoopt/geoopt (copyright by Maxim Kochurov).
 """
 
-import torch
 import numpy as np
+import torch
 from scipy.special import gamma
 
 
@@ -426,7 +426,7 @@ def poincare_mean(x, dim=0, c=1.0):
     lamb = lambda_x(x, c=c, keepdim=True)
     mean = torch.sum(lamb * x, dim=dim, keepdim=True) / torch.sum(lamb, dim=dim, keepdim=True)
     mean = k2p(mean, c)
-    return mean
+    return mean.squeeze(dim)
 
 
 def _dist_matrix(x, y, c):
