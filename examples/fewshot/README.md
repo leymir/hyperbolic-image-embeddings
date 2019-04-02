@@ -25,6 +25,7 @@ To train the network run `python train_protonet.py`. Some of the available argum
 
 Example scripts
 
-- `python train_protonet.py --gpu 0 --hyperbolic --dataset CUB --dim 512 --lr 0.001 --c 0.05 --gamma 0.7 --step_size 20`
+- `python train_protonet.py --gpu 0 --hyperbolic --dataset CUB --dim 512 --lr 0.001 --c 0.05 --gamma 0.7 --step_size
+ 20`
 - `python train_protonet.py --gpu 0 --hyperbolic --dataset MiniImageNet --dim 1024 --lr 0.001 --c 0.05 --gamma 0.2 
 --step_size 10`
