@@ -6,3 +6,11 @@
 /build
 /data
 .idea
+data
+results
+examples/fewshot/data/cub/images
+examples/fewshot/data/miniimagenet/images
+examples/fewshot/runs
+MiniImageNet*
+CUB*
+examples/fewshot/saves

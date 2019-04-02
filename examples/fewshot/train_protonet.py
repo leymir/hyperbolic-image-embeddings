@@ -17,7 +17,7 @@ if __name__ == '__main__':
     parser.add_argument('--max_epoch', type=int, default=200)
     parser.add_argument('--shot', type=int, default=1)
     parser.add_argument('--query', type=int, default=15)
-    parser.add_argument('--way', type=int, default=30)
+    parser.add_argument('--way', type=int, default=5)
     parser.add_argument('--validation_way', type=int, default=5)
     parser.add_argument('--lr', type=float, default=0.0001)
     parser.add_argument('--step_size', type=int, default=15)
@@ -27,7 +27,6 @@ if __name__ == '__main__':
     parser.add_argument('--dataset', type=str, default='CUB', choices=['MiniImageNet', 'CUB'])
     parser.add_argument('--save_path', type=str, default=None)
     parser.add_argument('--hyperbolic', action='store_true', default=False)
-    parser.add_argument('--auto_c', action='store_true', default=False)
     parser.add_argument('--c', type=float, default=1.0)
     parser.add_argument('--dim', type=int, default=64)
     parser.add_argument('--init_weights', type=str, default=None)
@@ -42,15 +41,12 @@ if __name__ == '__main__':
         print('CUDA IS AVAILABLE')
     set_gpu(args.gpu)
 
-    if args.auto_c:
-        c = auto_select_c(args.dim)
-        args.c = c
-
     if args.save_path is None:
         save_path1 = '-'.join([args.dataset, args.model_type, 'ProtoNet'])
         save_path2 = '_'.join([str(args.shot), str(args.query), str(args.way), str(args.validation_way),
                                str(args.step_size), str(args.gamma), str(args.lr),
-                               str(args.temperature), str(args.hyperbolic), str(args.dim), str(args.c)[:5]])
+                               str(args.temperature), str(args.hyperbolic), str(args.dim), str(args.c)[:5], str(args.train_c),
+                               str(args.train_x)])
         args.save_path = save_path1 + '_' + save_path2
         ensure_path(args.save_path)
     else:
