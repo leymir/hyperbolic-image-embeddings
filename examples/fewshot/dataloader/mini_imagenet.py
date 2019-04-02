@@ -37,25 +37,15 @@ class MiniImageNet(Dataset):
         self.num_class = len(set(label))
 
         # Transformation
-        if args.model_type == 'ConvNet':
-            image_size = 84
-            self.transform = transforms.Compose([
-                transforms.Resize(92),
-                transforms.CenterCrop(image_size),
-                transforms.ToTensor(),
-                transforms.Normalize(np.array([0.485, 0.456, 0.406]),
-                                     np.array([0.229, 0.224, 0.225]))
-            ])
-        elif args.model_type == 'ResNet':
-            image_size = 80
-            self.transform = transforms.Compose([
-                transforms.Resize(92),
-                transforms.CenterCrop(image_size),
-                transforms.ToTensor(),
-                transforms.Normalize(np.array([x / 255.0 for x in [125.3, 123.0, 113.9]]), 
-                                     np.array([x / 255.0 for x in [63.0, 62.1, 66.7]]))])
-        else:
-            raise ValueError('Non-supported Network Types. Please Revise Data Pre-Processing Scripts.')
+
+        image_size = 84
+        self.transform = transforms.Compose([
+            transforms.Resize(92),
+            transforms.CenterCrop(image_size),
+            transforms.ToTensor(),
+            transforms.Normalize(np.array([0.485, 0.456, 0.406]),
+                                 np.array([0.229, 0.224, 0.225]))
+        ])
 
     def __len__(self):
         return len(self.data)

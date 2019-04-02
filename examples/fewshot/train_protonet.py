@@ -10,8 +10,6 @@ from tensorboardX import SummaryWriter
 from torch.utils.data import DataLoader
 from utils import pprint, set_gpu, ensure_path, Averager, Timer, count_acc, compute_confidence_interval
 
-from hyptorch.pmath import auto_select_c
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--max_epoch', type=int, default=200)
@@ -23,7 +21,6 @@ if __name__ == '__main__':
     parser.add_argument('--step_size', type=int, default=15)
     parser.add_argument('--gamma', type=float, default=0.5)
     parser.add_argument('--temperature', type=float, default=1)
-    parser.add_argument('--model_type', type=str, default='ConvNet', choices=['ConvNet', 'ResNet'])
     parser.add_argument('--dataset', type=str, default='CUB', choices=['MiniImageNet', 'CUB'])
     parser.add_argument('--save_path', type=str, default=None)
     parser.add_argument('--hyperbolic', action='store_true', default=False)
@@ -42,7 +39,7 @@ if __name__ == '__main__':
     set_gpu(args.gpu)
 
     if args.save_path is None:
-        save_path1 = '-'.join([args.dataset, args.model_type, 'ProtoNet'])
+        save_path1 = '-'.join([args.dataset, 'ProtoNet'])
         save_path2 = '_'.join([str(args.shot), str(args.query), str(args.way), str(args.validation_way),
                                str(args.step_size), str(args.gamma), str(args.lr),
                                str(args.temperature), str(args.hyperbolic), str(args.dim), str(args.c)[:5], str(args.train_c),
