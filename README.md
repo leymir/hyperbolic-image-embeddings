@@ -5,7 +5,7 @@
   <img src="assets/pball_ops.png" width="300" /> 
 </p>
 
-## Supplementary code for the paper "Hyperbolic Image Embeddings".
+## Supplementary code for the paper [Hyperbolic Image Embeddings](https://arxiv.org/abs/1904.02239).
 
 ### Authors:
 - Valentin Khrulkov
@@ -22,7 +22,20 @@
 
 ### Instructions
 
-To replicate the results, follow the instructions [here](https://github.com/KhrulkovV/hyperbolic-image-embeddings/tree/master/examples/fewshot) .
+To replicate the results on CUB and *Mini*ImageNet, follow the instructions [here](https://github.com/KhrulkovV/hyperbolic-image-embeddings/tree/master/examples/fewshot) .
+
+### Citing
+If you used our research, we kindly ask you to cite the corresponding [paper](https://arxiv.org/abs/1904.02239).
+```
+@article{khrulkov2019hyperbolic, 
+  title={Hyperbolic Image Embeddings},
+  author={Khrulkov, Valentin and Mirvakhabova, Leyla and Ustinova, Evgeniya and 
+  Oseledets, Ivan and Lempitsky, Victor},
+  journal={arXiv preprint arXiv:1904.02239},
+  year={2019}
+}
+```
+
 
 ### Acknowledgements 
 
