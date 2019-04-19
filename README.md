@@ -11,8 +11,8 @@
 - Valentin Khrulkov
 - Leyla Mirvakhabova
 - Evgeniya Ustinova
-- Victor Lempitsky
 - Ivan Oseledets
+- Victor Lempitsky
 
 ### Prerequisites
 
