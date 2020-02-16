@@ -12,6 +12,7 @@ def tanh(x, clamp=15):
     return x.clamp(-clamp, clamp).tanh()
 
 
+# +
 class Artanh(torch.autograd.Function):
     @staticmethod
     def forward(ctx, x):
@@ -24,7 +25,28 @@ class Artanh(torch.autograd.Function):
     def backward(ctx, grad_output):
         input, = ctx.saved_tensors
         return grad_output / (1 - input ** 2)
+    
+    
+class RiemannianGradient(torch.autograd.Function):
+    
+    c = 1
+    
+    @staticmethod
+    def forward(ctx, x):
+        ctx.save_for_backward(x)
+        return x
+    
+    @staticmethod
+    def backward(ctx, grad_output):
+        x, = ctx.saved_tensors
+        #x: B x d
 
+        scale = (1 - RiemannianGradient.c * x.pow(2).sum(-1, keepdim=True)).pow(2) / 4
+        return grad_output * scale
+
+
+
+# -
 
 class Arsinh(torch.autograd.Function):
     @staticmethod

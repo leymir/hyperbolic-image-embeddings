@@ -139,12 +139,16 @@ class ToPoincare(nn.Module):
             self.c = c
 
         self.train_x = train_x
+        
+        self.riemmanian = pmath.RiemannianGradient
+        self.riemmanian.c = c
 
     def forward(self, x):
+        
         if self.train_x:
             xp = pmath.project(pmath.expmap0(self.xp, c=self.c), c=self.c)
-            return pmath.project(pmath.expmap(xp, x, c=self.c), c=self.c)
-        return pmath.project(pmath.expmap0(x, c=self.c), c=self.c)
+            return self.riemmanian.apply(pmath.project(pmath.expmap(xp, x, c=self.c), c=self.c))
+        return self.riemmanian.apply(pmath.project(pmath.expmap0(x, c=self.c), c=self.c))
 
     def extra_repr(self):
         return 'c={}, train_x={}'.format(self.c, self.train_x)
