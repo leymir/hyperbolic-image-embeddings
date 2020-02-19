@@ -34,8 +34,10 @@ if __name__ == '__main__':
     parser.add_argument('--lr_decay', type=bool, default=True)
     parser.add_argument('--train_c', action='store_true', default=False)
     parser.add_argument('--train_x', action='store_true', default=False)
+    parser.add_argument('--not-riemannian', action='store_true')
     args = parser.parse_args()
     pprint(vars(args))
+    args.riemannian = not args.not_riemannian
 
     if torch.cuda.is_available():
         print('CUDA IS AVAILABLE')
