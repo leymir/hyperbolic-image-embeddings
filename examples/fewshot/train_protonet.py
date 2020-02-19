@@ -4,6 +4,7 @@ import os.path as osp
 import numpy as np
 import torch
 import torch.nn.functional as F
+import torch.nn as nn
 from dataloader.samplers import CategoriesSampler
 from models.protonet import ProtoNet
 from tensorboardX import SummaryWriter
@@ -13,6 +14,8 @@ from utils import pprint, set_gpu, ensure_path, Averager, Timer, count_acc, comp
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--max_epoch', type=int, default=200)
+    parser.add_argument('--model', type=str, default='convnet', 
+                        choices=['convnet', 'resnet18', 'resnet34', 'densenet121', 'wideres'])
     parser.add_argument('--shot', type=int, default=1)
     parser.add_argument('--query', type=int, default=15)
     parser.add_argument('--way', type=int, default=5)
@@ -36,14 +39,14 @@ if __name__ == '__main__':
 
     if torch.cuda.is_available():
         print('CUDA IS AVAILABLE')
-    set_gpu(args.gpu)
+#     set_gpu(args.gpu)
 
     if args.save_path is None:
         save_path1 = '-'.join([args.dataset, 'ProtoNet'])
         save_path2 = '_'.join([str(args.shot), str(args.query), str(args.way), str(args.validation_way),
                                str(args.step_size), str(args.gamma), str(args.lr),
                                str(args.temperature), str(args.hyperbolic), str(args.dim), str(args.c)[:5], str(args.train_c),
-                               str(args.train_x)])
+                               str(args.train_x), str(args.model)])
         args.save_path = save_path1 + '_' + save_path2
         ensure_path(args.save_path)
     else:
@@ -66,7 +69,8 @@ if __name__ == '__main__':
     val_loader = DataLoader(dataset=valset, batch_sampler=val_sampler, num_workers=8, pin_memory=True)
 
     model = ProtoNet(args)
-
+    print(model)
+    
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
 
     if args.lr_decay:
@@ -86,7 +90,7 @@ if __name__ == '__main__':
     if torch.cuda.is_available():
         torch.backends.cudnn.benchmark = True
         model = model.cuda()
-
+    # model = nn.DataParallel(model)
 
     def save_model(name):
         torch.save(dict(params=model.state_dict()), osp.join(args.save_path, name + '.pth'))
@@ -124,6 +128,7 @@ if __name__ == '__main__':
                 data, _ = [_.cuda() for _ in batch]
             else:
                 data = batch[0]
+            
             p = args.shot * args.way
             data_shot, data_query = data[:p], data[p:]
             logits = model(data_shot, data_query)

@@ -29,8 +29,8 @@ class ImageJitter(object):
 
 THIS_PATH = osp.dirname(__file__)
 ROOT_PATH = osp.abspath(osp.join(THIS_PATH, '..'))
-IMAGE_PATH = osp.join(ROOT_PATH, 'data/miniimagenet/images')
-SPLIT_PATH = osp.join(ROOT_PATH, 'data/miniimagenet/split')
+IMAGE_PATH = osp.join(ROOT_PATH, '/workspace/simple_shot/data/miniimagenet/images') #'data/miniimagenet/images')
+SPLIT_PATH = osp.join(ROOT_PATH, '/workspace/simple_shot/split/mini') #'data/miniimagenet/split')
 
 
 class MiniImageNet(Dataset):

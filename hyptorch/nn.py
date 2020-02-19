@@ -124,7 +124,7 @@ class ToPoincare(nn.Module):
     Module which maps points in n-dim Euclidean space
     to n-dim Poincare ball
     """
-    def __init__(self, c, train_c=False, train_x=False, ball_dim=None):
+    def __init__(self, c, train_c=False, train_x=False, ball_dim=None, riemannian=True):
         super(ToPoincare, self).__init__()
         if train_x:
             if ball_dim is None:
@@ -140,15 +140,24 @@ class ToPoincare(nn.Module):
 
         self.train_x = train_x
         
-        self.riemmanian = pmath.RiemannianGradient
-        self.riemmanian.c = c
+        
+        self.riemannian = pmath.RiemannianGradient
+        self.riemannian.c = c
+        
+        if riemannian:
+            self.grad_fix = lambda x: self.riemannian.apply(x)
+        else:
+            self.grad_fix = lambda x: x
+            
+        
+            
 
     def forward(self, x):
         
         if self.train_x:
             xp = pmath.project(pmath.expmap0(self.xp, c=self.c), c=self.c)
-            return self.riemmanian.apply(pmath.project(pmath.expmap(xp, x, c=self.c), c=self.c))
-        return self.riemmanian.apply(pmath.project(pmath.expmap0(x, c=self.c), c=self.c))
+            return self.grad_fix(pmath.project(pmath.expmap(xp, x, c=self.c), c=self.c))
+        return self.grad_fix(pmath.project(pmath.expmap0(x, c=self.c), c=self.c))
 
     def extra_repr(self):
         return 'c={}, train_x={}'.format(self.c, self.train_x)

@@ -8,14 +8,35 @@ sys.path.append(os.path.dirname(os.getcwd()))
 import torch.nn as nn
 from utils import euclidean_metric
 from networks.convnet import ConvNet
+from networks.ResNet import resnet18, resnet34
+from networks.DenseNet import densenet121
+from networks.WideResNet import wideres
 
+
+
+# +
+# global model_dict = {'convnet': ConvNet(z_dim=args.dim), 
+#                      'resnet18': resnet18(remove_linear=True),
+#                      'densenet121': densenet121(remove_linear=True)}
+# -
 
 class ProtoNet(nn.Module):
     def __init__(self, args):
         super().__init__()
         self.args = args
-        self.encoder = ConvNet(z_dim=args.dim)
-
+        model_name = args.model
+        
+        if model_name == 'convnet':
+            self.encoder = ConvNet(z_dim=args.dim)
+        elif model_name == 'resnet18':
+            self.encoder = resnet18(remove_linear=True)
+        elif model_name == 'resnet34':
+            self.encoder = resnet34(remove_linear=True)
+        elif model_name == 'densenet121':
+            self.encoder = densenet121(remove_linear=True)
+        elif model_name == 'wideres':
+            self.encoder = wideres(remove_linear=True)
+    
         if args.hyperbolic:
             self.e2p = ToPoincare(c=args.c, train_c=args.train_c, train_x=args.train_x)
 
