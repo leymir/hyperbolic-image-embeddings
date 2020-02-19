@@ -3,6 +3,7 @@ import torch.nn as nn
 import torchvision
 from scipy.spatial import distance_matrix
 import numpy as np
+from tqdm import tqdm
 
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -21,7 +22,17 @@ def delta_hyp(dismat):
                                XY_p[None,:,:]), axis=1)
     return np.max(maxmin - XY_p)
 
-
+def batched_delta_hyp(X, n_tries=10, batch_size=1500):
+    vals = []
+    for i in tqdm(range(n_tries)):
+        idx = np.random.choice(len(X), batch_size)
+        X_batch = X[idx]
+        distmat = distance_matrix(X_batch, X_batch)
+        diam = np.max(distmat)
+        delta_rel = delta_hyp(distmat) / diam
+        vals.append(delta_rel)       
+    return np.mean(vals), np.std(vals)
+        
 
 class Flatten(nn.Module):
     def __init__(self):
