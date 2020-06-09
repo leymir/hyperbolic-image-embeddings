@@ -23,30 +23,30 @@ class Artanh(torch.autograd.Function):
 
     @staticmethod
     def backward(ctx, grad_output):
-        input, = ctx.saved_tensors
+        (input,) = ctx.saved_tensors
         return grad_output / (1 - input ** 2)
-    
-    
+
+
 class RiemannianGradient(torch.autograd.Function):
-    
+
     c = 1
-    
+
     @staticmethod
     def forward(ctx, x):
         ctx.save_for_backward(x)
         return x
-    
+
     @staticmethod
     def backward(ctx, grad_output):
-        x, = ctx.saved_tensors
-        #x: B x d
+        (x,) = ctx.saved_tensors
+        # x: B x d
 
         scale = (1 - RiemannianGradient.c * x.pow(2).sum(-1, keepdim=True)).pow(2) / 4
         return grad_output * scale
 
 
-
 # -
+
 
 class Arsinh(torch.autograd.Function):
     @staticmethod
@@ -56,7 +56,7 @@ class Arsinh(torch.autograd.Function):
 
     @staticmethod
     def backward(ctx, grad_output):
-        input, = ctx.saved_tensors
+        (input,) = ctx.saved_tensors
         return grad_output / (1 + input ** 2) ** 0.5
 
 
@@ -269,9 +269,9 @@ def _expmap(x, u, c):  # pragma: no cover
     sqrt_c = c ** 0.5
     u_norm = torch.clamp_min(u.norm(dim=-1, p=2, keepdim=True), 1e-5)
     second_term = (
-            tanh(sqrt_c / 2 * _lambda_x(x, c, keepdim=True) * u_norm)
-            * u
-            / (sqrt_c * u_norm)
+        tanh(sqrt_c / 2 * _lambda_x(x, c, keepdim=True) * u_norm)
+        * u
+        / (sqrt_c * u_norm)
     )
     gamma_1 = _mobius_add(x, second_term, c)
     return gamma_1
@@ -405,7 +405,7 @@ def _mobius_matvec(m, x, c):
 
 
 def _tensor_dot(x, y):
-    res = torch.einsum('ij,kj->ik', (x, y))
+    res = torch.einsum("ij,kj->ik", (x, y))
     return res
 
 
@@ -413,7 +413,7 @@ def _mobius_addition_batch(x, y, c):
     xy = _tensor_dot(x, y)  # B x C
     x2 = x.pow(2).sum(-1, keepdim=True)  # B x 1
     y2 = y.pow(2).sum(-1, keepdim=True)  # C x 1
-    num = (1 + 2 * c * xy + c * y2.permute(1, 0))  # B x C
+    num = 1 + 2 * c * xy + c * y2.permute(1, 0)  # B x C
     num = num.unsqueeze(2) * x.unsqueeze(1)
     num = num + (1 - c * x2).unsqueeze(2) * y  # B x C x D
     denom_part1 = 1 + 2 * c * xy  # B x C
@@ -468,14 +468,20 @@ def lorenz_factor(x, *, c=1.0, dim=-1, keepdim=False):
 def poincare_mean(x, dim=0, c=1.0):
     x = p2k(x, c)
     lamb = lorenz_factor(x, c=c, keepdim=True)
-    mean = torch.sum(lamb * x, dim=dim, keepdim=True) / torch.sum(lamb, dim=dim, keepdim=True)
+    mean = torch.sum(lamb * x, dim=dim, keepdim=True) / torch.sum(
+        lamb, dim=dim, keepdim=True
+    )
     mean = k2p(mean, c)
     return mean.squeeze(dim)
 
 
 def _dist_matrix(x, y, c):
     sqrt_c = c ** 0.5
-    return 2 / sqrt_c * artanh(sqrt_c * torch.norm(_mobius_addition_batch(-x, y, c=c), dim=-1))
+    return (
+        2
+        / sqrt_c
+        * artanh(sqrt_c * torch.norm(_mobius_addition_batch(-x, y, c=c), dim=-1))
+    )
 
 
 def dist_matrix(x, y, c=1.0):
@@ -493,4 +499,3 @@ def auto_select_c(d):
     R = R ** (1 / float(d))
     c = 1 / (R ** 2)
     return c
-
