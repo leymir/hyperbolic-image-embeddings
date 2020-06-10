@@ -31,7 +31,7 @@ class ProtoNet(nn.Module):
         elif model_name == "wideres":
             self.encoder = wideres(remove_linear=True)
         elif model_name == "resnet12":
-            self.encoder == Res12()
+            self.encoder = Res12()
         else:
             raise ValueError("Model not found")
 
