@@ -9,7 +9,7 @@ import torch.nn as nn
 from utils import euclidean_metric
 from networks.convnet import ConvNet
 from networks.ResNet import resnet18, resnet34
-from networks.ResNet12 import ResNet12
+from networks.ResNet12 import Res12
 from networks.DenseNet import densenet121
 from networks.WideResNet import wideres
 
@@ -31,7 +31,7 @@ class ProtoNet(nn.Module):
         elif model_name == "wideres":
             self.encoder = wideres(remove_linear=True)
         elif model_name == "resnet12":
-            self.encoder == ResNet12()
+            self.encoder = Res12()
         else:
             raise ValueError("Model not found")
 
