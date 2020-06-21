@@ -27,12 +27,12 @@ To replicate the results on CUB and *Mini*ImageNet, follow the instructions [her
 ### Citing
 If you used our research, we kindly ask you to cite the corresponding [paper](https://arxiv.org/abs/1904.02239).
 ```
-@article{khrulkov2019hyperbolic, 
-  title={Hyperbolic Image Embeddings},
-  author={Khrulkov, Valentin and Mirvakhabova, Leyla and Ustinova, Evgeniya and 
-  Oseledets, Ivan and Lempitsky, Victor},
-  journal={arXiv preprint arXiv:1904.02239},
-  year={2019}
+@InProceedings{Khrulkov_2020_CVPR,
+  author = {Khrulkov, Valentin and Mirvakhabova, Leyla and Ustinova, Evgeniya and Oseledets, Ivan and Lempitsky, Victor},
+  title = {Hyperbolic Image Embeddings},
+  booktitle = {The IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+  month = {June},
+  year = {2020}
 }
 ```
 
