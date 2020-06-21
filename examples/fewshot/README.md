@@ -18,14 +18,6 @@ To train the network run `python train_protonet.py`. Some of the available argum
 - `--hyperbolic` whether to use the hyperbolic network (default False)
 - `--c` curvature parameter of the Poincare ball (default 1.0)
 - `--dim` dimensionality of the embeddings (default 64)
-- `--train_c` whether to train the curvature parameter (for the hyperbolic network)
-- `--train_x` whether to train the origin point of the exponential map (for the hyperbolic network)
-
 ###
 
-Example scripts
-
-- `python train_protonet.py --gpu 0 --hyperbolic --dataset CUB --dim 512 --lr 0.001 --c 0.05 --gamma 0.7 --step_size
- 20`
-- `python train_protonet.py --gpu 0 --hyperbolic --dataset MiniImageNet --dim 1024 --lr 0.001 --c 0.05 --gamma 0.2 
---step_size 10`
+Example scripts can be found in reproduce_1.sh, reproduce_5.sh scripts
