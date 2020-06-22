@@ -20,4 +20,4 @@ To train the network run `python train_protonet.py`. Some of the available argum
 - `--dim` dimensionality of the embeddings (default 64)
 ###
 
-Example scripts can be found in reproduce_1.sh and reproduce_5.sh 
+Example scripts can be found in `reproduce_1.sh` and `reproduce_5.sh`, and in `configs` directory.
