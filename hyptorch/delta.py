@@ -30,7 +30,7 @@ def batched_delta_hyp(X, n_tries=10, batch_size=1500):
         X_batch = X[idx]
         distmat = distance_matrix(X_batch, X_batch)
         diam = np.max(distmat)
-        delta_rel = delta_hyp(distmat) / diam
+        delta_rel = 2 * delta_hyp(distmat) / diam
         vals.append(delta_rel)
     return np.mean(vals), np.std(vals)
 
